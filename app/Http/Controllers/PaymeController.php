@@ -7,6 +7,7 @@ use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Http\Resources\TransactionResource;
 
 class PaymeController extends Controller
 {
@@ -312,6 +313,25 @@ class PaymeController extends Controller
 
                 return $response;
             }
-        };
+        } elseif ($req->method == "GetStatement") {
+            $from = $req->params['from'];
+            $to = $req->params['to'];
+            $transactions = Transaction::getTransactionsByTimeRange($from, $to);
+
+            return response()->json([
+                'result' => [
+                    'transactions' => TransactionResource::collection($transactions),
+                ],
+            ]);
+        } elseif ($req->method == "ChangePassword") {
+            $response = [
+                'id' => $req->id,
+                'error' => [
+                    'code' => -32504,
+                    'message' => "Недостаточно привилегий для выполнения метода"
+                ]
+            ];
+            return json_encode($response);
+        }
     }
 }
