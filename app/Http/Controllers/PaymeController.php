@@ -174,6 +174,60 @@ class PaymeController extends Controller
                     ]
                 ];
                 return json_encode($response);
+            } else if ($transaction->state == 2) {
+                // Log::info('Test');
+                $response = [
+                    "result" => [
+                        'create_time' => intval($transaction->paycom_time),
+                        'perform_time' => intval($transaction->perform_time_unix),
+                        'cancel_time' => 0,
+                        'transaction' => strval($transaction->id),
+                        "state" => $transaction->state,
+                        "reason" => $transaction->reason
+                    ]
+                ];
+                return json_encode($response);
+            }
+        } else if ($req->method == "PerformTransaction") {
+            $ldate = date('Y-m-d H:i:s');
+            $transaction = Transaction::where('paycom_transaction_id', $req->params['id'])->first();
+            if (empty($transaction)) {
+                // Log::info('Transaction');
+                $response = [
+                    'id' => $req->id,
+                    'error' => [
+                        'code' => -31003,
+                        'message' => "Транзакция не найдена "
+                    ]
+                ];
+                return json_encode($response);
+            } else if ($transaction->state == 1) {
+                $currentMillis = intval(microtime(true) * 1000);
+                $transaction = Transaction::where('paycom_transaction_id', $req->params['id'])->first();
+                $transaction->state = 2;
+                $transaction->perform_time = $ldate;
+                $transaction->perform_time_unix = str_replace('.', '', $currentMillis);
+                $transaction->update();
+                $completed_order = Order::where('id', $transaction->order_id)->first();
+                $completed_order->status = 'yakunlandi';
+                $completed_order->update();
+                $response = [
+                    'result' => [
+                        'transaction' => "{$transaction->id}",
+                        'perform_time' => intval($transaction->perform_time_unix),
+                        'state' => intval($transaction->state)
+                    ]
+                ];
+                return json_encode($response);
+            } else if ($transaction->state == 2) {
+                $response = [
+                    'result' => [
+                        'transaction' => strval($transaction->id),
+                        'perform_time' => intval($transaction->perform_time_unix),
+                        'state' => intval($transaction->state)
+                    ]
+                ];
+                return json_encode($response);
             }
         }
     }
