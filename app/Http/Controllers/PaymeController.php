@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class PaymeController extends Controller
@@ -192,7 +191,6 @@ class PaymeController extends Controller
             $ldate = date('Y-m-d H:i:s');
             $transaction = Transaction::where('paycom_transaction_id', $req->params['id'])->first();
             if (empty($transaction)) {
-                // Log::info('Transaction');
                 $response = [
                     'id' => $req->id,
                     'error' => [
@@ -208,9 +206,11 @@ class PaymeController extends Controller
                 $transaction->perform_time = $ldate;
                 $transaction->perform_time_unix = str_replace('.', '', $currentMillis);
                 $transaction->update();
+                
                 $completed_order = Order::where('id', $transaction->order_id)->first();
                 $completed_order->status = 'yakunlandi';
                 $completed_order->update();
+                
                 $response = [
                     'result' => [
                         'transaction' => "{$transaction->id}",
