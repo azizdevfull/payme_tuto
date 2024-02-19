@@ -10,7 +10,6 @@ class PaymeController extends Controller
 {
     public function index(Request $req)
     {
-        Log::info($req);
         if ($req->method == "CheckPerformTransaction") {
             if (empty($req->params['account'])) {
                 $response = [
@@ -24,7 +23,6 @@ class PaymeController extends Controller
             } else {
                 $a = $req->params['account'];
                 $t = Order::where('id', $a['order_id'])->first();
-                // \Log::info($t->total);
                 if (empty($t)) {
                     $response = [
                         'id' => $req->id,
@@ -53,7 +51,6 @@ class PaymeController extends Controller
                     return json_encode($response);
                 }
             }
-            $t = Order::where('id', $a['order_id'])->where('price', $req->params['amount'])->first();
             $response = [
 
                 'result' => [
