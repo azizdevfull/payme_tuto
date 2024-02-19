@@ -24,8 +24,8 @@ class PaymeController extends Controller
                 return json_encode($response);
             } else {
                 $a = $req->params['account'];
-                $t = Order::where('id', $a['order_id'])->first();
-                if (empty($t)) {
+                $order = Order::where('id', $a['order_id'])->first();
+                if (empty($order)) {
                     $response = [
                         'id' => $req->id,
                         'error' => [
@@ -38,7 +38,7 @@ class PaymeController extends Controller
                         ]
                     ];
                     return json_encode($response);
-                } else if ($t->price != $req->params['amount']) {
+                } else if ($order->price != $req->params['amount']) {
                     $response = [
                         'id' => $req->id,
                         'error' => [
@@ -53,7 +53,7 @@ class PaymeController extends Controller
                     return json_encode($response);
                 }
             }
-            $t = Order::where('id', $a['order_id'])->where('price', $req->params['amount'])->first();
+            $order = Order::where('id', $a['order_id'])->where('price', $req->params['amount'])->first();
             $response = [
 
                 'result' => [
@@ -187,6 +187,30 @@ class PaymeController extends Controller
                     ]
                 ];
                 return json_encode($response);
+            } else if ($transaction->state == -1) {
+                $response = [
+                    "result" => [
+                        'create_time' => intval($transaction->paycom_time),
+                        'perform_time' => intval($transaction->perform_time_unix),
+                        'cancel_time' => intval($transaction->cancel_time),
+                        'transaction' => strval($transaction->id),
+                        "state" => $transaction->state,
+                        "reason" => $transaction->reason
+                    ]
+                ];
+                return json_encode($response);
+            } else if ($transaction->state == -2) {
+                $response = [
+                    "result" => [
+                        'create_time' => intval($transaction->paycom_time),
+                        'perform_time' => intval($transaction->perform_time_unix),
+                        'cancel_time' => intval($transaction->cancel_time),
+                        'transaction' => strval($transaction->id),
+                        "state" => $transaction->state,
+                        "reason" => $transaction->reason
+                    ]
+                ];
+                return json_encode($response);
             }
         } else if ($req->method == "PerformTransaction") {
             $ldate = date('Y-m-d H:i:s');
@@ -229,6 +253,65 @@ class PaymeController extends Controller
                 ];
                 return json_encode($response);
             }
-        }
+        } else if ($req->method == "CancelTransaction") {
+            $ldate = date('Y-m-d H:i:s');
+            $transaction = Transaction::where('paycom_transaction_id', $req->params['id'])->first();
+            if (empty($transaction)) {
+                $response = [
+                    'id' => $req->id,
+                    'error' => [
+                        "code" => -31003,
+                        "message" => "Транзакция не найдена"
+                    ]
+                ];
+                return json_encode($response);
+            } else if ($transaction->state == 1) {
+                $currentMillis = intval(microtime(true) * 1000);
+                $transaction = Transaction::where('paycom_transaction_id', $req->params['id'])->first();
+                $transaction->reason = $req->params['reason'];
+                $transaction->cancel_time = str_replace('.', '', $currentMillis);
+                $transaction->state = -1;
+                $transaction->update();
+
+                $order = Order::find($transaction->order_id);
+                $order->update(['status' => 'bekor qilindi']);
+                $response = [
+                    'result' => [
+                        "state" => intval($transaction->state),
+                        "cancel_time" => intval($transaction->cancel_time),
+                        "transaction" => strval($transaction->id)
+                    ]
+                ];
+                return $response;
+            } else if ($transaction->state == 2) {
+                $currentMillis = intval(microtime(true) * 1000);
+                $transaction = Transaction::where('paycom_transaction_id', $req->params['id'])->first();
+                $transaction->reason = $req->params['reason'];
+                $transaction->cancel_time = str_replace('.', '', $currentMillis);
+                $transaction->state = -2;
+                $transaction->update();
+
+                $order = Order::find($transaction->order_id);
+                $order->update(['status' => 'bekor qilindi']);
+                $response = [
+                    'result' => [
+                        "state" => intval($transaction->state),
+                        "cancel_time" => intval($transaction->cancel_time),
+                        "transaction" => strval($transaction->id)
+                    ]
+                ];
+                return $response;
+            } elseif (($transaction->state == -1) or ($transaction->state == -2)) {
+                $response = [
+                    'result' => [
+                        "state" => intval($transaction->state),
+                        "cancel_time" => intval($transaction->cancel_time),
+                        "transaction" => strval($transaction->id)
+                    ]
+                ];
+
+                return $response;
+            }
+        };
     }
 }
