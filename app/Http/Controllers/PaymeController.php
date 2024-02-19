@@ -149,9 +149,9 @@ class PaymeController extends Controller
                 }
             }
         } else if ($req->method == "CheckTransaction") {
-            $ldate = date('Y-m-d H:i:s');
+            // $ldate = date('Y-m-d H:i:s');
             $transaction = Transaction::where('paycom_transaction_id', $req->params['id'])->first();
-            Log::info($transaction);
+            // Log::info($transaction);
             if (empty($transaction)) {
                 $response = [
                     'id' => $req->id,
