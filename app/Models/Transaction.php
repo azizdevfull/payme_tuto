@@ -23,12 +23,6 @@ class Transaction extends Model
         'perform_time_unix',
     ];
 
-    public static function getTransactionsByOrderIdAndState($orderId)
-    {
-        return self::where('order_id', $orderId)
-            ->where('state', 1)
-            ->get();
-    }
     public static function getTransactionsByTimeRange($from, $to)
     {
         return self::whereBetween('paycom_time', [$from, $to])
