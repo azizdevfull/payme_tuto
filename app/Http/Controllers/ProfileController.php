@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Transaction;
 use App\Models\User;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use App\Http\Resources\TransactionResource;
 
 class ProfileController extends Controller
 {
@@ -125,7 +126,7 @@ class ProfileController extends Controller
                 return $response;
             }
             $transaction = Transaction::where('transaction', $id)->first();
-            Log::info($transaction);
+            // Log::info($transaction);
             if ($transaction) {
                 if ($transaction->state != 1) {
                     $response = [
@@ -431,6 +432,25 @@ class ProfileController extends Controller
                 ];
                 return $response;
             }
+        } else if ($req->method == "GetStatement") {
+            $from = $req->params['from'];
+            $to = $req->params['to'];
+            $transactions = Transaction::getTransactionsByTimeRange($from, $to);
+
+            return response()->json([
+                'result' => [
+                    'transactions' => TransactionResource::collection($transactions),
+                ],
+            ]);
+        } elseif ($req->method == "ChangePassword") {
+            $response = [
+                'id' => $req->id,
+                'error' => [
+                    'code' => -32504,
+                    'message' => "Недостаточно привилегий для выполнения метода"
+                ]
+            ];
+            return json_encode($response);
         }
     }
 

@@ -25,4 +25,10 @@ class Transaction extends Model
     {
         return $this->belongsTo(User::class, 'owner_id');
     }
+
+    public static function getTransactionsByTimeRange($from, $to)
+    {
+        return self::whereBetween('payme_time', [$from, $to])
+            ->get();
+    }
 }

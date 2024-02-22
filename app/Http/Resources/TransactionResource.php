@@ -15,14 +15,14 @@ class TransactionResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->paycom_transaction_id,
-            'time' => $this->paycom_time,
+            'id' => $this->transaction,
+            'time' => $this->payme_time,
             'amount' => $this->amount,
             'account' => [
-                'order_id' => $this->order_id,
+                'user_id' => $this->owner_id,
             ],
-            'create_time' => intval($this->paycom_time),
-            'perform_time' => intval($this->perform_time_unix),
+            'create_time' => intval($this->payme_time),
+            'perform_time' => intval($this->perform_time),
             'cancel_time' => intval($this->cancel_time) ?? 0,
             'transaction' => $this->id,
             'state' => $this->state,
