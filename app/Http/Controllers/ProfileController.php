@@ -217,7 +217,12 @@ class ProfileController extends Controller
             }
             $id = $req->params['id'];
             $transaction = Transaction::where('transaction', $id)->first();
-            if ($transaction) {
+            if ($transaction) {;
+                if ($transaction->reason == null) {
+                    $reason = $transaction->reason;
+                } else {
+                    $reason = intval($$transaction->reason);
+                }
                 $response = [
                     "result" => [
                         "create_time" => intval($transaction->create_time) ?? 0,
@@ -225,7 +230,7 @@ class ProfileController extends Controller
                         "cancel_time" => intval($transaction->cancel_time) ?? 0,
                         "transaction" => strval($transaction->id),
                         "state" => intval($transaction->state),
-                        "reason" => intval($transaction->reason)
+                        "reason" => $reason
                     ]
                 ];
                 return json_encode($response);
