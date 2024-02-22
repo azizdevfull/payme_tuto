@@ -2,36 +2,27 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Transaction extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'paycom_transaction_id',
-        'paycom_time',
-        'paycom_time_datetime',
+        'transaction',
+        'code',
+        'state',
+        'owner_id',
+        'amount',
+        'reason',
+        'payme_time',
+        'cancel_time',
         'create_time',
         'perform_time',
-        'cancel_time',
-        'amount',
-        'state',
-        'reason',
-        'receivers',
-        'order_id',
-        'perform_time_unix',
     ];
-
-    public static function getTransactionsByOrderIdAndState($orderId)
+    public function user()
     {
-        return self::where('order_id', $orderId)
-            ->where('state', 1)
-            ->get();
-    }
-    public static function getTransactionsByTimeRange($from, $to)
-    {
-        return self::whereBetween('paycom_time', [$from, $to])
-            ->get();
+        return $this->belongsTo(User::class, 'owner_id');
     }
 }
