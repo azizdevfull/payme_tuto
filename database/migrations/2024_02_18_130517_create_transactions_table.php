@@ -13,18 +13,16 @@ return new class extends Migration
     {
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
-            $table->string('paycom_transaction_id', 25)->nullable();
-            $table->string('paycom_time', 13)->nullable();
-            $table->string('paycom_time_datetime', 255)->nullable();
-            $table->dateTime('create_time')->nullable();
-            $table->dateTime('perform_time')->nullable();
-            $table->string('cancel_time', 13)->nullable();
-            $table->integer('amount')->nullable();
-            $table->tinyInteger('state')->nullable();
-            $table->tinyInteger('reason')->nullable();
-            $table->text('receivers')->nullable();
-            $table->integer('order_id')->nullable();
-            $table->string('perform_time_unix', 13)->nullable();
+            $table->string('transaction')->nullable();
+            $table->string('code')->nullable();
+            $table->string('state')->nullable();
+            $table->string('owner_id')->nullable();
+            $table->bigInteger('amount')->nullable();
+            $table->string('reason')->nullable();
+            $table->string('payme_time')->nullable();
+            $table->string('cancel_time')->nullable();
+            $table->string('create_time')->nullable();
+            $table->string('perform_time')->nullable();
             $table->timestamps();
         });
     }
