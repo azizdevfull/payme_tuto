@@ -204,7 +204,7 @@ class ProfileController extends Controller
                 ]
             ];
             return $response;
-        } else if ($req->method == "CheckTransaction") {
+        }else if ($req->method == "CheckTransaction") {
             if (empty($req->params['id'])) {
                 $response = [
                     'error' => [
@@ -216,23 +216,28 @@ class ProfileController extends Controller
             }
             $id = $req->params['id'];
             $transaction = Transaction::where('transaction', $id)->first();
-            if ($transaction) {
+            if ($transaction) {;
+                if ($transaction->reason == null) {
+                    $reason = $transaction->reason;
+                } else {
+                    $reason = intval($$transaction->reason);
+                }
                 $response = [
                     "result" => [
                         "create_time" => intval($transaction->create_time) ?? 0,
-                        "perform_time" => $transaction->perform_time ?? 0,
-                        "cancel_time" => $transaction->cancel_time ?? 0,
+                        "perform_time" => intval($transaction->perform_time) ?? 0,
+                        "cancel_time" => intval($transaction->cancel_time) ?? 0,
                         "transaction" => strval($transaction->id),
                         "state" => intval($transaction->state),
-                        "reason" => $transaction->reason
+                        "reason" => $reason
                     ]
                 ];
                 return json_encode($response);
             } else {
                 $response = [
                     'error' => [
-                        'code' => -31003,
                         'message' => [
+                            'code' => -31003,
                             "uz" => "Transaksiya topilmadi",
                             "ru" => "Трансакция не найдена",
                             "en" => "Transaction not found"
@@ -241,7 +246,7 @@ class ProfileController extends Controller
                 ];
                 return json_encode($response);
             }
-        }
+        } 
     }
 
 
