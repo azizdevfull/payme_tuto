@@ -137,6 +137,7 @@ class ProfileController extends Controller
                             "en" => "Can't perform transaction",
                         ]
                     ];
+                    return $response;
                 }
                 if ($transaction->state == 1) {
                     $response = [
@@ -220,7 +221,7 @@ class ProfileController extends Controller
                 $response = [
                     "result" => [
                         "create_time" => intval($transaction->create_time) ?? 0,
-                        "perform_time" => $transaction->perform_time ?? 0,
+                        "perform_time" => intval($transaction->perform_time) ?? 0,
                         "cancel_time" => $transaction->cancel_time ?? 0,
                         "transaction" => strval($transaction->id),
                         "state" => intval($transaction->state),
@@ -231,8 +232,8 @@ class ProfileController extends Controller
             } else {
                 $response = [
                     'error' => [
-                        'code' => -31003,
                         'message' => [
+                            'code' => -31003,
                             "uz" => "Transaksiya topilmadi",
                             "ru" => "Трансакция не найдена",
                             "en" => "Transaction not found"
@@ -241,6 +242,88 @@ class ProfileController extends Controller
                 ];
                 return json_encode($response);
             }
+        } else if ($req->method == "PerformTransaction") {
+            if (empty($req->params['id'])) {
+                $response = [
+                    'error' => [
+                        'code' => -32504,
+                        'message' => "Недостаточно привилегий для выполнения метода"
+                    ]
+                ];
+                return json_encode($response);
+            }
+            $id = $req->params['id'];
+            $transaction = Transaction::where('transaction', $id)->first();
+            if (!$transaction) {
+                $response = [
+                    'error' => [
+                        'message' => [
+                            'code' => -31003,
+                            "uz" => "Transaksiya topilmadi",
+                            "ru" => "Трансакция не найдена",
+                            "en" => "Transaction not found"
+                        ]
+                    ]
+                ];
+                return json_encode($response);
+            }
+            if ($transaction->state != 1) {
+                if ($transaction->state == 2) {
+                    $response = [
+                        'result' => [
+                            "state" => intval($transaction->state),
+                            "perform_time" => intval($transaction->perform_time),
+                            "transaction" => strval($transaction->id),
+                        ]
+                    ];
+                    return json_encode($response);
+                } else {
+                    $response = [
+                        'error' => [
+                            'code' => -31008,
+                            "uz" => "Bu operatsiyani bajarish mumkin emas",
+                            "ru" => "Невозможно выполнить данную операцию.",
+                            "en" => "Can't perform transaction",
+                        ]
+                    ];
+                    return $response;
+                }
+            }
+
+            if (!$this->checkTimeout($transaction->create_time)) {
+                $transaction->update([
+                    'state' => -1,
+                    'reason' => 4
+                ]);
+
+                $response = [
+
+                    'error' => [
+                        'code' => -31008,
+                        "uz" => "Vaqt tugashi o'tdi",
+                        "ru" => "Тайм-аут прошел",
+                        "en" => "Timeout passed"
+                    ]
+                ];
+                return $response;
+            }
+
+            $transaction->state = 2;
+            $transaction->perform_time = $this->microtime();
+            $transaction->save();
+
+            $user = User::where('id', $transaction->owner_id)->first();
+            $user->money += $transaction->amount;
+            $user->save();
+
+            $response = [
+                'result' => [
+                    "state" => $transaction->state,
+                    "perform_time" => $transaction->perform_time,
+                    "transaction" => strval($transaction->id),
+                ]
+            ];
+            return json_encode($response);
         }
     }
 
