@@ -39,7 +39,7 @@ class PaymeController extends Controller
                         ]
                     ];
                     return json_encode($response);
-                } else if ($order->price != $req->params['amount']) {
+                } else if ($order->price * 100 != $req->params['amount']) {
                     $response = [
                         'id' => $req->id,
                         'error' => [
@@ -93,7 +93,7 @@ class PaymeController extends Controller
                         ]
                     ];
                     return json_encode($response);
-                } else if ($order->price != $req->params['amount']) {
+                } else if ($order->price * 100 != $req->params['amount']) {
                     $response = [
                         'id' => $req->id,
                         'error' => [

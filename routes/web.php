@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PaymeController;
 use Illuminate\Support\Facades\Route;
 
@@ -14,8 +15,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [HomeController::class, 'index']);
+
+Route::get('/products/{id}', [HomeController::class, 'show'])->name('products.show');
+Route::post('checkout/{id}', [HomeController::class, 'store'])->name('checkout.store');
+
 
 Route::post('/payme', [PaymeController::class, 'index']);
