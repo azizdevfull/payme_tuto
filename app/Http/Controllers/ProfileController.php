@@ -124,7 +124,6 @@ class ProfileController extends Controller
 
             if ($amount < $this->minAmount || $amount > $this->maxAmount) {
                 $response = [
-
                     'error' => [
                         'code' => -31001,
                         "message" => [
@@ -141,7 +140,6 @@ class ProfileController extends Controller
             if ($transaction) {
                 if ($transaction->state != 1) {
                     $response = [
-
                         'error' => [
                             'code' => -31001,
                             "uz" => "Bu operatsiyani bajarish mumkin emas",
