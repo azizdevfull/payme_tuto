@@ -32,9 +32,11 @@ class ProfileController extends Controller
 
                     'error' => [
                         'code' => -31001,
-                        "uz" => "Notug'ri summa.",
-                        "ru" => "Неверная сумма.",
-                        "en" => "Wrong amount.",
+                        "message" => [
+                            "uz" => "Notug'ri summa.",
+                            "ru" => "Неверная сумма.",
+                            "en" => "Wrong amount.",
+                        ]
                     ]
                 ];
                 return $response;
@@ -45,9 +47,11 @@ class ProfileController extends Controller
 
                     'error' => [
                         'code' => -31050,
-                        "uz" => "Foydalanuvchi topilmadi",
-                        "ru" => "Пользователь не найден",
-                        "en" => "User not found",
+                        "message" => [
+                            "uz" => "Foydalanuvchi topilmadi",
+                            "ru" => "Пользователь не найден",
+                            "en" => "User not found",
+                        ]
                     ]
                 ];
                 return $response;
@@ -58,9 +62,11 @@ class ProfileController extends Controller
 
                     'error' => [
                         'code' => -31050,
-                        "uz" => "Foydalanuvchi topilmadi",
-                        "ru" => "Пользователь не найден",
-                        "en" => "User not found",
+                        "message" => [
+                            "uz" => "Foydalanuvchi topilmadi",
+                            "ru" => "Пользователь не найден",
+                            "en" => "User not found",
+                        ]
                     ]
                 ];
                 return $response;
@@ -91,9 +97,11 @@ class ProfileController extends Controller
 
                     'error' => [
                         'code' => -31050,
-                        "uz" => "Foydalanuvchi topilmadi",
-                        "ru" => "Пользователь не найден",
-                        "en" => "User not found",
+                        "message" => [
+                            "uz" => "Foydalanuvchi topilmadi",
+                            "ru" => "Пользователь не найден",
+                            "en" => "User not found",
+                        ]
                     ]
                 ];
                 return $response;
@@ -104,9 +112,11 @@ class ProfileController extends Controller
 
                     'error' => [
                         'code' => -31050,
-                        "uz" => "Foydalanuvchi topilmadi",
-                        "ru" => "Пользователь не найден",
-                        "en" => "User not found",
+                        "message" => [
+                            "uz" => "Foydalanuvchi topilmadi",
+                            "ru" => "Пользователь не найден",
+                            "en" => "User not found",
+                        ]
                     ]
                 ];
                 return $response;
@@ -117,9 +127,11 @@ class ProfileController extends Controller
 
                     'error' => [
                         'code' => -31001,
-                        "uz" => "Notug'ri summa.",
-                        "ru" => "Неверная сумма.",
-                        "en" => "Wrong amount.",
+                        "message" => [
+                            "uz" => "Notug'ri summa.",
+                            "ru" => "Неверная сумма.",
+                            "en" => "Wrong amount.",
+                        ]
                     ]
                 ];
                 return $response;
@@ -159,12 +171,13 @@ class ProfileController extends Controller
                     ]);
 
                     $response = [
-
                         'error' => [
                             'code' => -31008,
-                            "uz" => "Vaqt tugashi o'tdi",
-                            "ru" => "Тайм-аут прошел",
-                            "en" => "Timeout passed"
+                            "message" => [
+                                "uz" => "Vaqt tugashi o'tdi",
+                                "ru" => "Тайм-аут прошел",
+                                "en" => "Timeout passed"
+                            ]
                         ]
                     ];
                     return $response;
@@ -204,7 +217,7 @@ class ProfileController extends Controller
                 ]
             ];
             return $response;
-        }else if ($req->method == "CheckTransaction") {
+        } else if ($req->method == "CheckTransaction") {
             if (empty($req->params['id'])) {
                 $response = [
                     'error' => [
@@ -238,15 +251,17 @@ class ProfileController extends Controller
                     'error' => [
                         'message' => [
                             'code' => -31003,
-                            "uz" => "Transaksiya topilmadi",
-                            "ru" => "Трансакция не найдена",
-                            "en" => "Transaction not found"
+                            "message" => [
+                                "uz" => "Transaksiya topilmadi",
+                                "ru" => "Трансакция не найдена",
+                                "en" => "Transaction not found"
+                            ]
                         ]
                     ]
                 ];
                 return json_encode($response);
             }
-        } 
+        }
     }
 
 
