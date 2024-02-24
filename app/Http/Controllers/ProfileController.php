@@ -221,7 +221,7 @@ class ProfileController extends Controller
                 if ($transaction->reason == null) {
                     $reason = $transaction->reason;
                 } else {
-                    $reason = intval($$transaction->reason);
+                    $reason = intval($transaction->reason);
                 }
                 $response = [
                     "result" => [
@@ -345,9 +345,11 @@ class ProfileController extends Controller
 
                     'error' => [
                         'code' => -32600,
-                        "uz" => "Notog`ri JSON-RPC obyekt yuborilgan.",
-                        "ru" => "Передан неправильный JSON-RPC объект.",
-                        "en" => "Handed the wrong JSON-RPC object."
+                        "message" => [
+                            "uz" => "Notog`ri JSON-RPC obyekt yuborilgan.",
+                            "ru" => "Передан неправильный JSON-RPC объект.",
+                            "en" => "Handed the wrong JSON-RPC object."
+                        ]
                     ]
                 ];
                 return $response;
@@ -360,8 +362,8 @@ class ProfileController extends Controller
             if (!$transaction) {
                 $response = [
                     'error' => [
+                        'code' => -31003,
                         'message' => [
-                            'code' => -31003,
                             "uz" => "Transaksiya topilmadi",
                             "ru" => "Трансакция не найдена",
                             "en" => "Transaction not found"
