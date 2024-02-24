@@ -218,6 +218,11 @@ class ProfileController extends Controller
             $id = $req->params['id'];
             $transaction = Transaction::where('transaction', $id)->first();
             if ($transaction) {
+                if ($transaction->reason) {
+                    $tr = intval($transaction->reason);
+                } else {
+                    $tr = null;
+                }
                 $response = [
                     "result" => [
                         "create_time" => intval($transaction->create_time) ?? 0,
@@ -225,7 +230,7 @@ class ProfileController extends Controller
                         "cancel_time" => intval($transaction->cancel_time) ?? 0,
                         "transaction" => strval($transaction->id),
                         "state" => intval($transaction->state),
-                        "reason" => intval($transaction->reason)
+                        "reason" => $tr
                     ]
                 ];
                 return json_encode($response);
@@ -267,6 +272,7 @@ class ProfileController extends Controller
                 ];
                 return json_encode($response);
             }
+            // Log::info($transaction->state);
             if ($transaction->state != 1) {
                 if ($transaction->state == 2) {
                     $response = [
@@ -328,110 +334,6 @@ class ProfileController extends Controller
                 ]
             ];
             return json_encode($response);
-        } else if ($req->method == "CancelTransaction") {
-            if (empty($req->params['id']) and empty($req->params['reason'])) {
-                $response = [
-                    'error' => [
-                        'code' => -32504,
-                        'message' => "Недостаточно привилегий для выполнения метода"
-                    ]
-                ];
-                return json_encode($response);
-            }
-
-            if (!array_key_exists('reason', $req->params)) {
-                $response = [
-
-                    'error' => [
-                        'code' => -32600,
-                        "message" => [
-                            "uz" => "Notog`ri JSON-RPC obyekt yuborilgan.",
-                            "ru" => "Передан неправильный JSON-RPC объект.",
-                            "en" => "Handed the wrong JSON-RPC object."
-                        ]
-                    ]
-                ];
-                return $response;
-            }
-
-            $id = $req->params['id'];
-            $reason = $req->params['reason'];
-
-            $transaction = Transaction::where('transaction', $id)->first();
-            if (!$transaction) {
-                $response = [
-                    'error' => [
-                        'code' => -31003,
-                        'message' => [
-                            "uz" => "Transaksiya topilmadi",
-                            "ru" => "Трансакция не найдена",
-                            "en" => "Transaction not found"
-                        ]
-                    ]
-                ];
-                return json_encode($response);
-            }
-
-            if ($transaction->state == 1) {
-                $cancelTime = $this->microtime();
-
-                $transaction->update([
-                    "state" => -1,
-                    "cancel_time" => $cancelTime,
-                    "reason" => $reason
-                ]);
-
-                $response = [
-                    "result" => [
-                        "state" => intval($transaction->state),
-                        "cancel_time" => intval($transaction->cancel_time),
-                        "transaction" => strval($transaction->id)
-                    ]
-                ];
-                return $response;
-            }
-            if ($transaction->state == -1) {
-                $response = [
-                    "result" => [
-                        "state" => intval($transaction->state),
-                        "cancel_time" => intval($transaction->cancel_time),
-                        "transaction" => strval($transaction->id)
-                    ]
-                ];
-                return $response;
-            }
-            if ($transaction->state == -2) {
-                $response = [
-                    "result" => [
-                        "state" => intval($transaction->state),
-                        "cancel_time" => intval($transaction->cancel_time),
-                        "transaction" => strval($transaction->id)
-                    ]
-                ];
-                return $response;
-            }
-            if ($transaction->state == 2) {
-                $cancelTime = $this->microtime();
-
-                $transaction->update([
-                    "state" => -2,
-                    "cancel_time" => $cancelTime,
-                    "reason" => $reason
-                ]);
-
-                $user = User::where('id', $transaction->owner_id)->first();
-                $user->money -= $transaction->amount;
-                $user->save();
-
-                $response = [
-                    "result" => [
-                        "state" => intval($transaction->state),
-                        "cancel_time" => intval($transaction->cancel_time),
-                        "transaction" => strval($transaction->id)
-                    ]
-                ];
-                return $response;
-            }
         }
     }
 
