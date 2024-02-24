@@ -257,8 +257,8 @@ class ProfileController extends Controller
             if (!$transaction) {
                 $response = [
                     'error' => [
+                        'code' => -31003,
                         'message' => [
-                            'code' => -31003,
                             "uz" => "Transaksiya topilmadi",
                             "ru" => "Трансакция не найдена",
                             "en" => "Transaction not found"
@@ -281,9 +281,11 @@ class ProfileController extends Controller
                     $response = [
                         'error' => [
                             'code' => -31008,
-                            "uz" => "Bu operatsiyani bajarish mumkin emas",
-                            "ru" => "Невозможно выполнить данную операцию.",
-                            "en" => "Can't perform transaction",
+                            "message" => [
+                                "uz" => "Bu operatsiyani bajarish mumkin emas",
+                                "ru" => "Невозможно выполнить данную операцию.",
+                                "en" => "Can't perform transaction",
+                            ]
                         ]
                     ];
                     return $response;
@@ -300,9 +302,11 @@ class ProfileController extends Controller
 
                     'error' => [
                         'code' => -31008,
-                        "uz" => "Vaqt tugashi o'tdi",
-                        "ru" => "Тайм-аут прошел",
-                        "en" => "Timeout passed"
+                        "message" => [
+                            "uz" => "Vaqt tugashi o'tdi",
+                            "ru" => "Тайм-аут прошел",
+                            "en" => "Timeout passed"
+                        ]
                     ]
                 ];
                 return $response;
@@ -340,9 +344,11 @@ class ProfileController extends Controller
 
                     'error' => [
                         'code' => -32600,
-                        "uz" => "Notog`ri JSON-RPC obyekt yuborilgan.",
-                        "ru" => "Передан неправильный JSON-RPC объект.",
-                        "en" => "Handed the wrong JSON-RPC object."
+                        "message" => [
+                            "uz" => "Notog`ri JSON-RPC obyekt yuborilgan.",
+                            "ru" => "Передан неправильный JSON-RPC объект.",
+                            "en" => "Handed the wrong JSON-RPC object."
+                        ]
                     ]
                 ];
                 return $response;
@@ -355,8 +361,8 @@ class ProfileController extends Controller
             if (!$transaction) {
                 $response = [
                     'error' => [
+                        'code' => -31003,
                         'message' => [
-                            'code' => -31003,
                             "uz" => "Transaksiya topilmadi",
                             "ru" => "Трансакция не найдена",
                             "en" => "Transaction not found"
