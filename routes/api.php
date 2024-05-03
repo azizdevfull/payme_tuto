@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PaymeController;
+use App\Http\Controllers\ProfileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,4 +19,5 @@ use App\Http\Controllers\PaymeController;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
-Route::post('/payme', [PaymeController::class, 'index']);
+Route::post('/payme', [PaymeController::class, 'index'])->middleware('payme');
+Route::post('/payme-profile', [ProfileController::class, 'index']);
