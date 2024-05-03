@@ -19,5 +19,5 @@ use App\Http\Controllers\ProfileController;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
-Route::post('/payme', [PaymeController::class, 'index']);
+Route::post('/payme', [PaymeController::class, 'index'])->middleware('payme');
 Route::post('/payme-profile', [ProfileController::class, 'index']);
