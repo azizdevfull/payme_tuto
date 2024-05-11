@@ -12,6 +12,7 @@ class PaymeMiddleware
     public function handle(Request $request, Closure $next): Response
     {
         $authorization = $request->header('Authorization');
+        // \Log::info('authorization: ' . $authorization);
         if (!$authorization || !preg_match('/^\s*Basic\s+(\S+)\s*$/i', $authorization, $matches)) {
             return response()->json([
                 'jsonrpc' => '2.0',
@@ -25,11 +26,11 @@ class PaymeMiddleware
                 ]
             ]);
         }
-
+        // \Log::info("Matches:" . $matches[1]);
         $decodedCredentials = base64_decode($matches[1]);
-
+        // \Log::info("Decoded credentials:" . $decodedCredentials);
         list($username, $password) = explode(':', $decodedCredentials);
-
+        // \Log::info('Username and Password: ' . $username . ':' . $password);
         $expectedUsername = "Paycom";
         $expectedPassword = "VrumKE@#8NRTC&pts0q%TCqNBu7?@IbivQuO";
 
